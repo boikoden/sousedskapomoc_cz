@@ -7,4 +7,12 @@ Jakakoliv pomoc je vitana - cela aplikace bude uvolnena pod licenci GNU/GPL.
 
 Veskere cinnosti spojene s provozovanim tohoto webu (at uz kuryrni prace, prace operatora, vyvojarske prace apd.) jsou provadeny BEZ NAROKU na odmenu.
 
- 
+#Install
+Install guide, firstly install all dependencies
+```
+composer install
+```
+WIP (work in progress) - not working now
+```
+bin/console orm:schema-tool:update -f
+```
