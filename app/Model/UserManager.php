@@ -6,6 +6,7 @@ namespace SousedskaPomoc\Model;
 
 use Nette;
 use Nette\Security\Passwords;
+use Symfony\Component\PropertyAccess\Exception\AccessException;
 
 
 /**
@@ -52,8 +53,9 @@ final class UserManager implements Nette\Security\IAuthenticator
 			->fetch();
 
 		if (!$row) {
-			throw new Nette\Security\AuthenticationException('The username is incorrect.', self::IDENTITY_NOT_FOUND);
-
+            throw new Nette\Security\AuthenticationException('The username is incorrect.', self::IDENTITY_NOT_FOUND);
+        } elseif ($row->password == NULL) {
+		    throw new AccessException();
 		} elseif (!$this->passwords->verify($password, $row[self::COLUMN_PASSWORD_HASH])) {
 			throw new Nette\Security\AuthenticationException('The password is incorrect.', self::INVALID_CREDENTIAL);
 

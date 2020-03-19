@@ -6,7 +6,9 @@ namespace SousedskaPomoc\Forms;
 
 use Nette;
 use Nette\Application\UI\Form;
+use Nette\Application\UI\Control;
 use Nette\Security\User;
+use Symfony\Component\PropertyAccess\Exception\AccessException;
 
 
 final class SignInFormFactory
@@ -47,8 +49,10 @@ final class SignInFormFactory
 				$this->user->login($values->email, $values->password);
 			} catch (Nette\Security\AuthenticationException $e) {
                 $form->addError('Špatné přihlašovací údaje.');
-
                 return;
+            } catch (AccessException $exception) {
+                $form->getPresenter()->flashMessage('Prosíme nastavte si heslo.');
+                $form->getPresenter()->redirect('Homepage:lostPassword');
             }
 			$onSuccess();
 		};
