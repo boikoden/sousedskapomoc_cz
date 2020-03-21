@@ -63,7 +63,7 @@
 			<li n:if="$user->isLoggedIn()" class="nav-item">
 				<a n:href="System:dashboard" class="nav-link">{_templates.header.overview}</a>
 			</li>
-			<li>
+			<li n:if="$user->isInRole('admin')">
 				<a n:href="Headquarters:default" class="nav-link">{_templates.headquarters.title}</a>
 			</li>
 			<li>
