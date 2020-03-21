@@ -6,6 +6,8 @@ namespace SousedskaPomoc\Presenters;
 
 use Contributte\FormsBootstrap\BootstrapForm;
 use SousedskaPomoc\Model\OrderManager;
+use SousedskaPomoc\Repository\OrderRepository;
+use SousedskaPomoc\Entities\Orders;
 
 final class CourierPresenter extends BasePresenter
 {
@@ -14,11 +16,20 @@ final class CourierPresenter extends BasePresenter
 
     protected $orderId;
 
+    /**
+     * @var OrderRepository
+     */
+    protected $orderRepository;
+
 
 
     public function injectOrderManager(OrderManager $orderManager)
     {
         $this->orderManager = $orderManager;
+    }
+
+    public function injectOrderRepository(OrderRepository $orderRepository) {
+        $this->orderRepository = $orderRepository;
     }
 
 
@@ -30,18 +41,17 @@ final class CourierPresenter extends BasePresenter
             ->setDefaultValue($this->orderId);
         $form->addTextArea('courier_note', $this->translator->translate('forms.postOrder.courierNote'));
         $form->addSubmit('postOrderFormSubmit', $this->translator->translate('forms.postOrder.buttonCourierNote'));
-        $form->onSuccess[] = [$this, "postOrder"];
+        $form->onSuccess[] = [$this, "updateOrder"];
 
         return $form;
     }
 
 
 
-    public function postOrder(BootstrapForm $form)
+    public function updateOrder(BootstrapForm $form)
     {
         $values = $form->getValues();
-
-        $result = $this->orderManager->updateNote($values->id, $values->courier_note);
+        $this->orderRepository->updateCourierNote($values->id, $values->courier_note);
         $this->flashMessage($this->translator->translate('messages.order.orderSuccess'));
         $this->redirect("Coordinator:dashboard");
     }

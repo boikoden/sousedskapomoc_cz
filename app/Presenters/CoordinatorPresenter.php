@@ -5,13 +5,32 @@ declare(strict_types=1);
 namespace SousedskaPomoc\Presenters;
 
 use Contributte\FormsBootstrap\BootstrapForm;
+use SousedskaPomoc\Entities\Orders;
 use SousedskaPomoc\Model\OrderManager;
+use SousedskaPomoc\Model\UserManager;
+use SousedskaPomoc\Repository\OrderRepository;
+use SousedskaPomoc\Repository\VolunteerRepository;
 
 final class CoordinatorPresenter extends BasePresenter
 {
     /** @var \SousedskaPomoc\Model\OrderManager */
     protected $orderManager;
 
+
+    /** @var OrderRepository */
+    protected $orderRepository;
+
+    /** @var VolunteerRepository */
+    protected $volunteerRepository;
+
+    public function injectVolunteerRepository(VolunteerRepository $volunteerRepository) {
+        $this->volunteerRepository = $volunteerRepository;
+    }
+
+
+    public function injectOrderRepository(OrderRepository $orderRepository) {
+        $this->orderRepository = $orderRepository;
+    }
 
 
     public function injectOrderManager(OrderManager $orderManager)
@@ -67,10 +86,17 @@ final class CoordinatorPresenter extends BasePresenter
     {
         $values = $form->getValues();
 
-        $values->id_volunteers = $this->user->getId();
-        $values->status = "new";
+        /** @var Orders $order */
+        $order = new Orders();
+        $user = $this->volunteerRepository->getById($this->user->getId());
+        $order->setAuthor($user);
+        $order->setStatus('new');
+        $order->setDeliveryAddress($values->delivery_address);
+        $order->setDeliveryPhone($values->delivery_phone);
+        $order->setCustomerNote($values->note);
+        $order->setItems($values->order_items);
 
-        $result = $this->orderManager->create($values);
+        $this->orderRepository->create($order);
         $this->flashMessage($this->translator->translate('messages.order.orderSuccess'));
         $this->redirect("Coordinator:dashboard");
     }
